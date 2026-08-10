@@ -461,28 +461,30 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
   transform: none;
 }
 
-/* شريط الصور المتحرك — قالب موحد وفاخر بوضوح عالي لكل قطعة */
 .mq {
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   /* الشريط دائماً LTR حتى تشتغل حسبة الإزاحة بنفس الطريقة بالعربي والإنجليزي */
   direction: ltr;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
+.mq::-webkit-scrollbar { display: none; }
 .mq + .mq { margin-top: 16px; }
 .mq__track {
   display: flex;
   gap: 18px;
   align-items: center;
   width: max-content;
-  /* بدون will-change — المسار عرضه آلاف البكسلات، وحجزه كطبقة GPU دائمة
-     يستهلك ذاكرة ضخمة ويخلي الموبايل يطيح لمسار رسم أبطأ.
-     الـ translate3d بالحركة نفسها كافي حتى يرفعه للمعالج الرسومي. */
-  animation: slide var(--dur, 115s) linear infinite;
+  -webkit-animation: slide var(--dur, 115s) linear infinite;
+          animation: slide var(--dur, 115s) linear infinite;
 }
 .mq--rev .mq__track { animation-direction: reverse; }
-@keyframes slide { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+@-webkit-keyframes slide { from { -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); } to { -webkit-transform: translate3d(-50%, 0, 0); transform: translate3d(-50%, 0, 0); } }
+@keyframes slide { from { -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); } to { -webkit-transform: translate3d(-50%, 0, 0); transform: translate3d(-50%, 0, 0); } }
 
 /* شريط صور البضاعة — شريط مفرد وقالب عمودي مرتب (3:4) يظهر القلائد والأطقم بالكامل */
 .shot {
@@ -605,7 +607,6 @@ body:has(.sheet.on) .dock { opacity: 0; transform: translateY(14px); pointer-eve
 .rise[data-d="3"] { transition-delay: .27s; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
   .rise { opacity: 1; transform: none; filter: none; }
   html { scroll-behavior: auto; }
 }

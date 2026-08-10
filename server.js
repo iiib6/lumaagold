@@ -160,8 +160,8 @@ app.use('/uploads', express.static(uploadsDir));
 // Serve Static Frontend Files
 app.use(express.static(path.join(__dirname)));
 
-// Fallback to index.html for main route
-app.get('/', (req, res) => {
+// Fallback for all other routes to index.html (eliminates 404 errors)
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
