@@ -1,0 +1,243 @@
+import os
+
+html_content = """<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اللمعة الذهبية — استيراد الذهب والمجوهرات | الفلوجة</title>
+<meta name="description" content="شركة اللمعة الذهبية لاستيراد الذهب والمجوهرات — بيع مفرد وشراء وتبديل الذهب القديم. الفلوجة، النزيزة، السوق العصري.">
+<meta name="theme-color" content="#0d1428">
+<link rel="icon" href="assets/logo/mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body
+  data-title-ar="اللمعة الذهبية — استيراد الذهب والمجوهرات | الفلوجة"
+  data-title-en="Golden Shine — Gold &amp; Jewelry Import | Fallujah"
+  data-desc-ar="شركة اللمعة الذهبية لاستيراد الذهب والمجوهرات — بيع مفرد وشراء وتبديل الذهب القديم. الفلوجة، النزيزة، السوق العصري."
+  data-desc-en="Golden Shine Company for Gold &amp; Jewelry Import — retail sales, gold buy-back and exchange. Fallujah, Al-Nazizah, Modern Market.">
+
+<!-- ============================== الشريط العائم =========================== -->
+<nav class="island">
+  <a class="island__logo" href="#top" data-ar-aria="اللمعة الذهبية" data-en-aria="Golden Shine" aria-label="اللمعة الذهبية">
+    <img src="assets/logo/lockup-on-navy.svg" alt="شركة اللمعة الذهبية">
+  </a>
+  <div class="menu">
+    <a href="#top" class="on" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+    <a href="#offer" data-ar="خدماتنا" data-en="Services">خدماتنا</a>
+    <a href="#shop" data-ar="المحل والواجهة" data-en="Showroom">المحل والواجهة</a>
+    <a href="#merchandise" data-ar="البضاعة والذهب" data-en="Merchandise">البضاعة والذهب</a>
+    <a href="#contact" data-ar="التواصل" data-en="Contact">التواصل</a>
+  </div>
+  <button class="lang" type="button" data-ar-aria="تغيير اللغة" data-en-aria="Switch language" aria-label="تغيير اللغة">EN</button>
+  <button class="burger" type="button" aria-expanded="false" data-ar-aria="القائمة" data-en-aria="Menu" aria-label="القائمة"><i></i><i></i></button>
+</nav>
+
+<div class="sheet">
+  <a href="#top" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+  <a href="#shop" data-ar="المحل والواجهة" data-en="Showroom">المحل والواجهة</a>
+  <a href="#merchandise" data-ar="البضاعة والذهب" data-en="Merchandise">البضاعة والذهب</a>
+  <a href="#contact" data-ar="التواصل" data-en="Contact">التواصل</a>
+  <span class="sheet__tel ltr" data-cfg="phone">0782 642 0404</span>
+</div>
+
+<!-- ================================== Hero ================================ -->
+<header class="hero" id="top">
+  <div class="arabesque-pattern"></div>
+  <div class="wm"><img src="assets/logo/mark-mono-light.svg" alt="" aria-hidden="true"></div>
+  <div class="sheen"></div>
+  <span class="speck"></span><span class="speck s"></span><span class="speck"></span>
+
+  <div class="wrap hero__grid">
+    <div class="rise">
+      <div class="hero__loc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.7C17.3 17 20 13 20 9a8 8 0 1 0-16 0c0 4 2.7 8 8 12.7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <span data-ar="الأنبار – الفلوجة – النزيزة – السوق العصري" data-en="Anbar – Fallujah – Al-Nazizah – Modern Market">الأنبار – الفلوجة – النزيزة – السوق العصري</span>
+      </div>
+      <img class="hero__logo" src="assets/logo/wordmark-on-navy.svg" alt="شركة اللمعة الذهبية">
+      <p class="lead on-dark" data-cfg="hero_slogan" data-ar="لاستيراد الذهب والمجوهرات. ذهب أصيل، وزنٌ أمام عينك، وسعرٌ مربوط بسعر السوق يوم المعاملة." data-en="Gold and jewelry import. Authentic gold, weighed in front of you, priced at the market rate of the day.">لاستيراد الذهب والمجوهرات. ذهب أصيل، وزنٌ أمام عينك، وسعرٌ مربوط بسعر السوق يوم المعاملة.</p>
+
+      <div class="hero__cta">
+        <a class="btn btn--gold" href="#merchandise">
+          <span data-ar="شوف المعرض" data-en="See the gallery">شوف المعرض</span>
+          <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i>
+        </a>
+        <a class="btn btn--line" href="https://wa.me/9647826420404" target="_blank" rel="noopener">
+          <span data-ar="راسلنا واتساب" data-en="WhatsApp us">راسلنا واتساب</span>
+          <i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24zm-2.27 4.4c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.32-.74-1.8-.19-.47-.39-.41-.54-.42h-.46z"/></svg></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero__media rise" data-d="2">
+      <div class="frame hero__shot">
+        <div><img src="images/company-sign.jpg" alt="شركة اللمعة الذهبية" data-guard></div>
+      </div>
+      <div class="hero__caption">
+        <span data-ar="📍 السوق العصري – الفلوجة" data-en="📍 Modern Market – Fallujah">📍 السوق العصري – الفلوجة</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================================ الخدمتان ============================== -->
+<section class="offer" id="offer">
+  <div class="arabesque-pattern"></div>
+  <article class="offer__i rise">
+    <span class="offer__n">٠١</span>
+    <h2 class="d3" data-ar="بيع مفرد" data-en="Retail">بيع مفرد</h2>
+    <p data-ar="خواتم، قلائد، أساور وأطقم زفاف — عيار ٢١ و ١٨، تختارها براحتك داخل المعرض." data-en="Rings, necklaces, bracelets and bridal sets — 21K and 18K, chosen at your own pace in the showroom.">خواتم، قلائد، أساور وأطقم زفاف — عيار ٢١ و ١٨، تختارها براحتك داخل المعرض.</p>
+  </article>
+  <article class="offer__i rise" data-d="1">
+    <span class="offer__n">٠٢</span>
+    <h2 class="d3" data-ar="شراء وتبديل" data-en="Buy-back &amp; Exchange">شراء وتبديل</h2>
+    <p data-ar="جيب ذهبك القديم — نوزنه أمام عينك ونحسبه بسعر السوق، وتختار: تبدّله أو تستلم قيمته." data-en="Bring your old gold — we weigh it in front of you at the market price, then you trade it or take its value.">جيب ذهبك القديم — نوزنه أمام عينك ونحسبه بسعر السوق، وتختار: تبدّله أو تستلم قيمته.</p>
+  </article>
+</section>
+
+<!-- ============================ 1. قسم صور المحل والواجهة (ثابت) ======================== -->
+<section class="band band--night glow" id="shop" style="padding-bottom:clamp(50px,7vw,80px)">
+  <div class="arabesque-pattern"></div>
+  <div class="wm wm--sm"><img src="assets/logo/mark-mono-light.svg" alt="" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="head rise">
+      <div class="head__l">
+        <span class="eyebrow" data-ar="المعرض والواجهة المعمارية" data-en="SHOWROOM FACADE">المعرض والواجهة المعمارية</span>
+        <h2 class="d2" data-ar="🏬 صور المحل والواجهة" data-en="🏬 Showroom & Exterior">🏬 صور المحل والواجهة</h2>
+      </div>
+      <p class="on-dark" style="font-size:.86rem;margin:0" data-ar="صور ثابتة حقيقية للمحل واللوحة والواجهة — اضغط أي صورة للتكبير" data-en="Static real photos of the showroom — tap to enlarge">صور ثابتة حقيقية للمحل واللوحة والواجهة — اضغط أي صورة للتكبير</p>
+    </div>
+
+    <!-- شبكة ثابتة لصور المحل -->
+    <div id="shop-grid" class="shop-grid rise"></div>
+  </div>
+</section>
+
+<div class="gold-divider wrap">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
+</div>
+
+<!-- ============================ 2. قسم صور البضاعة (شريط متحرك بطيء) ======================== -->
+<section class="band band--navy glow" id="merchandise" style="padding-bottom:clamp(70px,9vw,120px);border-top:1px solid var(--hair-d)">
+  <div class="arabesque-pattern"></div>
+  <div class="wm wm--sm"><img src="assets/logo/mark-mono-light.svg" alt="" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="head rise">
+      <div class="head__l">
+        <span class="eyebrow" data-ar="المصوغات والذهب عيار 21 و18" data-en="GOLD & JEWELRY">المصوغات والذهب عيار 21 و18</span>
+        <h2 class="d2" data-ar="✨ صور البضاعة والمجوهرات" data-en="✨ Merchandise & Gold">✨ صور البضاعة والمجوهرات</h2>
+      </div>
+      <p class="on-dark" style="font-size:.86rem;margin:0" data-ar="شريط هادئ ومتحرك لآخر التشكيلات والموديلات — اضغط الصورة للتكبير" data-en="Slow moving marquee — tap photo to enlarge">شريط هادئ ومتحرك لآخر التشكيلات والموديلات — اضغط الصورة للتكبير</p>
+    </div>
+  </div>
+
+  <!-- الشريط المتحرك للبضاعة والمصوغات -->
+  <div data-marquee-merchandise></div>
+</section>
+
+<!-- ================================= التواصل ============================== -->
+<section class="band band--cream" id="contact">
+  <div class="arabesque-pattern arabesque-pattern--light"></div>
+  <div class="wm wm--sm wm--ink"><img src="assets/logo/mark-mono-dark.svg" alt="" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="split" style="align-items:start;margin-bottom:clamp(34px,4.5vw,56px)">
+      <div class="rise">
+        <span class="eyebrow" data-ar="نحن بالخدمة" data-en="AT YOUR SERVICE">نحن بالخدمة</span>
+        <h2 class="d2" style="margin-top:16px" data-ar="تواصل ويانا" data-en="Get in Touch">تواصل ويانا</h2>
+      </div>
+      <p class="lead on-light rise" data-d="1" data-ar="أسرع طريقة هي واتساب — أرسل صورة القطعة اللي عاجبتك ونخبرك إذا متوفرة وسعرها اليوم." data-en="WhatsApp is fastest — send a photo of the piece you like and we'll tell you if it's in stock and today's price.">أسرع طريقة هي واتساب — أرسل صورة القطعة اللي عاجبتك ونخبرك إذا متوفرة وسعرها اليوم.</p>
+    </div>
+
+    <div class="cards rise">
+      <a class="cx" href="tel:+9647826420404">
+        <span data-ar="اتصال" data-en="PHONE">اتصال</span>
+        <b class="ltr" data-cfg="phone">0782 642 0404</b>
+        <small data-ar="اضغط للاتصال" data-en="Tap to call">اضغط للاتصال</small>
+      </a>
+      <a class="cx" href="https://wa.me/9647826420404" target="_blank" rel="noopener">
+        <span data-ar="واتساب" data-en="WHATSAPP">واتساب</span>
+        <b class="ltr" data-cfg="whatsapp">+964 782 642 0404</b>
+        <small data-ar="أسرع طريقة للرد" data-en="Fastest reply">أسرع طريقة للرد</small>
+      </a>
+      <a class="cx" href="mailto:jdukeoldid@gmail.com">
+        <span data-ar="البريد الإلكتروني" data-en="EMAIL">البريد الإلكتروني</span>
+        <b class="ltr" data-cfg="email">jdukeoldid@gmail.com</b>
+        <small data-ar="للمراسلات الرسمية" data-en="For formal enquiries">للمراسلات الرسمية</small>
+      </a>
+      <a class="cx" href="https://instagram.com/os__mk" target="_blank" rel="noopener">
+        <span data-ar="إنستغرام" data-en="INSTAGRAM">إنستغرام</span>
+        <b class="ltr" data-cfg="instagram">@os__mk</b>
+        <small data-ar="آخر الموديلات" data-en="Latest designs">آخر الموديلات</small>
+      </a>
+      <div class="cx" style="grid-column:1/-1">
+        <span data-ar="العنوان" data-en="ADDRESS">العنوان</span>
+        <b data-ar="الأنبار – الفلوجة – النزيزة – السوق العصري" data-en="Anbar – Fallujah – Al-Nazizah – Modern Market" data-cfg="address_ar">الأنبار – الفلوجة – النزيزة – السوق العصري</b>
+        <small data-ar="راسلنا على واتساب ونرسل لك الموقع بالضبط" data-en="Message us on WhatsApp and we'll share the exact location">راسلنا على واتساب ونرسل لك الموقع بالضبط</small>
+      </div>
+    </div>
+
+    <div class="hero__cta rise" data-d="1" style="margin-top:28px">
+      <a class="btn btn--ink" href="https://wa.me/9647826420404" target="_blank" rel="noopener">
+        <span data-ar="افتح المحادثة" data-en="Open the chat">افتح المحادثة</span>
+        <i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24zm-2.27 4.4c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.32-.74-1.8-.19-.47-.39-.41-.54-.42h-.46z"/></svg></i>
+      </a>
+      <a class="btn btn--outline" href="tel:+9647826420404">
+        <span class="ltr" data-cfg="phone">0782 642 0404</span>
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================================= الفوتر =============================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__top">
+      <a class="foot__logo" href="#top" aria-label="اللمعة الذهبية">
+        <img src="assets/logo/wordmark-on-navy.svg" alt="شركة اللمعة الذهبية">
+      </a>
+      <nav class="foot__links">
+        <a href="#top" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+        <a href="#offer" data-ar="خدماتنا" data-en="Services">خدماتنا</a>
+        <a href="#shop" data-ar="المحل والواجهة" data-en="Showroom">المحل والواجهة</a>
+        <a href="#merchandise" data-ar="البضاعة والذهب" data-en="Merchandise">البضاعة والذهب</a>
+        <a href="#contact" data-ar="التواصل" data-en="Contact">التواصل</a>
+        <a href="tel:+9647826420404" class="ltr" data-cfg="phone">0782 642 0404</a>
+        <a href="mailto:jdukeoldid@gmail.com" class="ltr" data-cfg="email">jdukeoldid@gmail.com</a>
+        <a href="https://instagram.com/os__mk" target="_blank" rel="noopener" class="ltr" data-cfg="instagram">@os__mk</a>
+        <a href="admin.html" style="color:var(--gold);font-weight:500" data-ar="لوحة التحكم ⚙️" data-en="Admin Panel ⚙️">لوحة التحكم ⚙️</a>
+      </nav>
+    </div>
+    <div class="foot__end">
+      <span data-ar="© ٢٠٢٦ شركة اللمعة الذهبية لاستيراد الذهب والمجوهرات م.م" data-en="© 2026 Golden Shine Co. for Gold &amp; Jewelry Import Ltd.">© ٢٠٢٦ شركة اللمعة الذهبية لاستيراد الذهب والمجوهرات م.م</span>
+      <span data-ar="الفلوجة – النزيزة – السوق العصري" data-en="Fallujah – Al-Nazizah – Modern Market" data-cfg="address_ar">الفلوجة – النزيزة – السوق العصري</span>
+    </div>
+  </div>
+</footer>
+
+<div class="dock">
+  <a href="https://wa.me/9647826420404" target="_blank" rel="noopener" data-ar-aria="راسلنا على واتساب" data-en-aria="Message us on WhatsApp" aria-label="راسلنا على واتساب">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24zm-2.27 4.4c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.32-.74-1.8-.19-.47-.39-.41-.54-.42h-.46z"/></svg>
+  </a>
+  <a href="tel:+9647826420404" data-ar-aria="اتصل بنا" data-en-aria="Call us" aria-label="اتصل بنا">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  </a>
+</div>
+
+<script src="assets/js/gallery-data.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>"""
+
+target_path = os.path.abspath("index.html")
+with open(target_path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("SUCCESSFULLY WRITTEN INDEX.HTML WITH UTF-8 ENCODING")

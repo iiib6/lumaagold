@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة التحكم — شركة اللمعة الذهبية</title>
+<link rel="icon" href="assets/logo/mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="admin-header">
+  <div class="admin-header__brand">
+    <img src="assets/logo/lockup-on-navy.svg" alt="شركة اللمعة الذهبية" class="admin-header__logo">
+    <h1 class="admin-header__title">لوحة التحكم بالموقع</h1>
+  </div>
+  <div class="admin-header__actions">
+    <a href="index.html" class="btn-admin btn-admin--gold" target="_blank">
+      <span>معاينة الموقع</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+    </a>
+  </div>
+</header>
+
+<div class="admin-container">
+
+  <!-- Tabs Navigation -->
+  <nav class="admin-tabs">
+    <button class="tab-btn active" onclick="switchTab('gallery')">
+      <span>🖼️ إدارة معرض الصور</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('info')">
+      <span>⚙️ معلومات المحل والتواصل</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('backup')">
+      <span>💾 التصدير واستعادة الضبط</span>
+    </button>
+  </nav>
+
+  <!-- TAB 1: GALLERY MANAGER -->
+  <section id="tab-gallery" class="tab-content active">
+    
+    <!-- Add Image Form -->
+    <div class="admin-card">
+      <h2 class="admin-card__title">➕ إضافة صورة جديدة للموقع</h2>
+      <form id="add-photo-form" onsubmit="handleAddPhoto(event)">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>اختر صورة أو عدة صور معاً من جهازك</label>
+            <div class="dropzone" onclick="document.getElementById('photo-file-input').click()">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              <p style="margin:8px 0 0;font-size:.9rem;color:var(--gold-lt)">اضغط هنا لاختيار صورة أو عدة صور معاً من الكومبيوتر أو الهاتف</p>
+              <input type="file" id="photo-file-input" accept="image/*" multiple style="display:none" onchange="handleFileSelect(event)">
+              <div id="file-preview-container" style="display:none;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>عنوان الصورة (اختياري)</label>
+            <input type="text" id="photo-ar" class="form-control" placeholder="اختياري — يمكنك تركه فارغاً">
+          </div>
+
+          <div class="form-group">
+            <label>عنوان الصورة بالإنجليزي (اختياري)</label>
+            <input type="text" id="photo-en" class="form-control" placeholder="اختياري — يمكنك تركه فارغاً">
+          </div>
+
+          <div class="form-group">
+            <label>التصنيف الرئيسي للصورة</label>
+            <select id="photo-cat" class="form-control">
+              <option value="shop" selected>🏬 صور المحل والواجهة (Shop & Exterior)</option>
+              <option value="merchandise">✨ البضاعة والمصوغات والذهب (Merchandise & Gold)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>شكل الصورة</label>
+            <select id="photo-tall" class="form-control">
+              <option value="false">أفقي / عادي</option>
+              <option value="true">طولي (عمودي)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:12px;">
+          <button type="submit" class="btn-admin btn-admin--gold">➕ إضافة الصورة إلى الموقع</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Current Gallery List -->
+    <div class="admin-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 class="admin-card__title" style="margin:0">🖼️ الصور المعروضة حالياً بالمعرض (<span id="gallery-count">0</span>)</h2>
+      </div>
+      <p style="font-size:.85rem;color:rgba(247,243,234,.6);margin-top:0">يمكنك تقديم/تأخير الترتيب، تعيين الصورة كصورة رئيسية بالموقع، أو حذفها بضغطة زر.</p>
+      
+      <div id="gallery-grid-list" class="gallery-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 2: SHOP & CONTACT INFO -->
+  <section id="tab-info" class="tab-content">
+    <div class="admin-card">
+      <h2 class="admin-card__title">⚙️ تعديل معلومات الاتصال والعناوين</h2>
+      <form id="site-info-form" onsubmit="handleSaveInfo(event)">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label>رقم الاتصال (Phone)</label>
+            <input type="text" id="cfg-phone" class="form-control" value="0782 642 0404">
+          </div>
+
+          <div class="form-group">
+            <label>رقم الواتساب (WhatsApp)</label>
+            <input type="text" id="cfg-whatsapp" class="form-control" value="+964 782 642 0404">
+          </div>
+
+          <div class="form-group">
+            <label>البريد الإلكتروني (Email)</label>
+            <input type="email" id="cfg-email" class="form-control" value="jdukeoldid@gmail.com">
+          </div>
+
+          <div class="form-group">
+            <label>حساب الإنستغرام (Instagram)</label>
+            <input type="text" id="cfg-instagram" class="form-control" value="@os__mk">
+          </div>
+
+          <div class="form-group full-width">
+            <label>العنوان الكامل (Address)</label>
+            <input type="text" id="cfg-address" class="form-control" value="الأنبار – الفلوجة – النزيزة – السوق العصري">
+          </div>
+
+          <div class="form-group full-width">
+            <label>الشعار والوصف الرئيسي (Hero Slogan)</label>
+            <textarea id="cfg-slogan" class="form-control">لاستيراد الذهب والمجوهرات. ذهب أصيل، وزنٌ أمام عينك، وسعرٌ مربوط بسعر السوق يوم المعاملة.</textarea>
+          </div>
+
+        </div>
+
+        <div style="margin-top:20px;">
+          <button type="submit" class="btn-admin btn-admin--gold">💾 حفظ المعلومات الجديدة</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- TAB 3: BACKUP & RESET -->
+  <section id="tab-backup" class="tab-content">
+    <div class="admin-card">
+      <h2 class="admin-card__title">💾 النسخ الاحتياطي وتصدير البيانات</h2>
+      <p style="font-size:.9rem;color:rgba(247,243,234,.7)">يمكنك تنزيل ملف بيانات الصور المحدث للحفاظ على نسخة احتياطية أو دمجها في الملفات الأصلية.</p>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+        <button onclick="exportGalleryJS()" class="btn-admin btn-admin--outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <span>تنزيل ملف gallery-data.js المحدث</span>
+        </button>
+
+        <button onclick="handleResetDefault()" class="btn-admin btn-admin--danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>إعادة ضبط الصور الافتراضية</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast">تم التحديث بنجاح!</div>
+
+<script src="assets/js/gallery-data.js"></script>
+<script>
+  var currentSelectedDataUrl = "";
+
+  var CAT_LABELS = {
+    shop: "🏬 صور المحل والواجهة",
+    company: "🏬 صور المحل والواجهة",
+    merchandise: "✨ البضاعة والمصوغات",
+    jewelry: "✨ البضاعة والمصوغات",
+    gold: "✨ البضاعة والمصوغات"
+  };
+
+  function getItems() {
+    try {
+      var saved = localStorage.getItem("lumaa_gallery_items");
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch(e) {}
+    return (window.GALLERY_ITEMS || []).slice();
+  }
+
+  function saveItems(items) {
+    localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
+    renderGallery();
+    showToast("تم تحديث معرض الصور بنجاح!");
+  }
+
+  function getConfig() {
+    try {
+      var saved = localStorage.getItem("lumaa_site_config");
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return {
+      phone: "0782 642 0404",
+      whatsapp: "+964 782 642 0404",
+      email: "jdukeoldid@gmail.com",
+      instagram: "@os__mk",
+      address_ar: "الأنبار – الفلوجة – النزيزة – السوق العصري",
+      hero_slogan_ar: "لاستيراد الذهب والمجوهرات. ذهب أصيل، وزنٌ أمام عينك، وسعرٌ مربوط بسعر السوق يوم المعاملة."
+    };
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+
+    var targetBtn = document.querySelector(`.tab-btn[onclick*="${tabId}"]`);
+    var targetContent = document.getElementById(`tab-${tabId}`);
+    if (targetBtn) targetBtn.classList.add('active');
+    if (targetContent) targetContent.classList.add('active');
+  }
+
+  var selectedFilesDataUrls = [];
+
+  function initCatPreference() {
+    var savedCat = localStorage.getItem("lumaa_last_selected_cat");
+    if (savedCat) {
+      var catSelect = document.getElementById("photo-cat");
+      if (catSelect) catSelect.value = savedCat;
+    }
+  }
+
+  function handleFileSelect(e) {
+    var files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    selectedFilesDataUrls = [];
+    var container = document.getElementById("file-preview-container");
+    container.innerHTML = "";
+    container.style.display = "flex";
+
+    files.forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(evt) {
+        selectedFilesDataUrls.push(evt.target.result);
+        var img = document.createElement("img");
+        img.src = evt.target.result;
+        img.style.height = "75px";
+        img.style.width = "75px";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "8px";
+        img.style.border = "1px solid var(--gold)";
+        container.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function handleAddPhoto(e) {
+    e.preventDefault();
+    if (!selectedFilesDataUrls.length) {
+      alert("الرجاء اختيار صورة واحدة على الأقل!");
+      return;
+    }
+
+    var catSelect = document.getElementById("photo-cat");
+    var cat = catSelect.value;
+    
+    // حفظ التحديد حتى يبقى ثابتاً ولا يتغير أبداً
+    localStorage.setItem("lumaa_last_selected_cat", cat);
+
+    var baseAr = document.getElementById("photo-ar").value.trim();
+    var baseEn = document.getElementById("photo-en").value.trim();
+    var tall = document.getElementById("photo-tall").value === "true";
+
+    var items = getItems();
+    var count = selectedFilesDataUrls.length;
+
+    selectedFilesDataUrls.forEach(function(dataUrl, i) {
+      var suffix = (count > 1) ? (" (" + (i + 1) + ")") : "";
+      var ar = baseAr ? (baseAr + suffix) : ((cat === "shop") ? ("صورة واجهة المحل" + suffix) : ("مجوهرات ذهب" + suffix));
+      var en = baseEn ? (baseEn + suffix) : ((cat === "shop") ? ("Showroom Facade" + suffix) : ("Gold Jewelry" + suffix));
+
+      items.unshift({
+        src: dataUrl,
+        ar: ar,
+        en: en,
+        cat: cat,
+        tall: tall
+      });
+    });
+
+    saveItems(items);
+
+    // تصفير مدخل الملف والنصوص دون تغيير الخيار المحدد (يبقى ثابتاً)
+    document.getElementById("photo-ar").value = "";
+    document.getElementById("photo-en").value = "";
+    document.getElementById("photo-file-input").value = "";
+    var container = document.getElementById("file-preview-container");
+    container.innerHTML = "";
+    container.style.display = "none";
+    selectedFilesDataUrls = [];
+
+    // تأكيد بقاء الاختيار ثابتاً
+    catSelect.value = cat;
+
+    showToast("تم إضافة " + count + " صورة/صور بنجاح! 📸");
+  }
+
+  function moveItem(index, dir) {
+    var items = getItems();
+    var targetIndex = index + dir;
+    if (targetIndex < 0 || targetIndex >= items.length) return;
+
+    var temp = items[index];
+    items[index] = items[targetIndex];
+    items[targetIndex] = temp;
+
+    saveItems(items);
+  }
+
+  function deleteItem(index) {
+    if (!confirm("هل أنت تأكد من رغبتك بحذف هذه الصورة من الموقع؟")) return;
+    var items = getItems();
+    items.splice(index, 1);
+    saveItems(items);
+  }
+
+  function setAsHeroImage(index) {
+    var items = getItems();
+    var item = items[index];
+    if (!item) return;
+
+    var cfg = getConfig();
+    cfg.hero_image = item.src;
+    localStorage.setItem("lumaa_site_config", JSON.stringify(cfg));
+    showToast("تم تعيين الصورة كصورة رئيسية بالموقع! ⭐");
+  }
+
+  function renderGallery() {
+    var items = getItems();
+    var container = document.getElementById("gallery-grid-list");
+    document.getElementById("gallery-count").textContent = items.length;
+
+    if (!items.length) {
+      container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--sand)">لا توجد صور حالياً. قم بإضافة صورة جديدة من الأعلى!</p>`;
+      return;
+    }
+
+    var cfg = getConfig();
+    var heroImageSrc = cfg.hero_image || "images/company-sign.jpg";
+
+    container.innerHTML = items.map(function(item, idx) {
+      var isHero = (item.src === heroImageSrc);
+      return `
+        <div class="item-card">
+          <div class="item-card__img-wrap">
+            <img src="${item.src}" class="item-card__img" alt="${item.ar}">
+            <span class="item-card__badge">${CAT_LABELS[item.cat] || item.cat}</span>
+            ${isHero ? `<span class="item-card__hero-badge">⭐ الواجهة الرئيسية</span>` : ''}
+          </div>
+          <div class="item-card__body">
+            <h3 class="item-card__title">${item.ar}</h3>
+            <span class="item-card__sub">${item.en || ''} ${item.tall ? '• طولي' : ''}</span>
+            <div class="item-card__actions">
+              <button class="action-btn" onclick="moveItem(${idx}, -1)" title="تقديم">▲</button>
+              <button class="action-btn" onclick="moveItem(${idx}, 1)" title="تأخير">▼</button>
+              <button class="action-btn" onclick="setAsHeroImage(${idx})" title="تعيين كصورة رئيسية">⭐ رئيسية</button>
+              <button class="action-btn action-btn--danger" onclick="deleteItem(${idx})" title="حذف">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function loadInfoForm() {
+    var cfg = getConfig();
+    document.getElementById("cfg-phone").value = cfg.phone || "";
+    document.getElementById("cfg-whatsapp").value = cfg.whatsapp || "";
+    document.getElementById("cfg-email").value = cfg.email || "";
+    document.getElementById("cfg-instagram").value = cfg.instagram || "";
+    document.getElementById("cfg-address").value = cfg.address_ar || "";
+    document.getElementById("cfg-slogan").value = cfg.hero_slogan_ar || "";
+  }
+
+  function handleSaveInfo(e) {
+    e.preventDefault();
+    var cfg = getConfig();
+    cfg.phone = document.getElementById("cfg-phone").value.trim();
+    cfg.whatsapp = document.getElementById("cfg-whatsapp").value.trim();
+    cfg.email = document.getElementById("cfg-email").value.trim();
+    cfg.instagram = document.getElementById("cfg-instagram").value.trim();
+    cfg.address_ar = document.getElementById("cfg-address").value.trim();
+    cfg.hero_slogan_ar = document.getElementById("cfg-slogan").value.trim();
+
+    localStorage.setItem("lumaa_site_config", JSON.stringify(cfg));
+    showToast("تم حفظ معلومات الاتصال والموقع بنجاح!");
+  }
+
+  function handleResetDefault() {
+    if (!confirm("هل تريد إرجاع جميع الصور والمعلومات إلى الحالة الأصلية للافتراضية؟")) return;
+    localStorage.removeItem("lumaa_gallery_items");
+    localStorage.removeItem("lumaa_site_config");
+    renderGallery();
+    loadInfoForm();
+    showToast("تمت استعادة الإعدادات الأصلية بنجاح!");
+  }
+
+  function exportGalleryJS() {
+    var items = getItems();
+    var cleanItems = items.map(function(it){
+      return {
+        src: it.src,
+        ar: it.ar,
+        en: it.en,
+        cat: it.cat,
+        tall: !!it.tall
+      };
+    });
+
+    var content = `/* =============================================================\n   بيانات معرض الصور — شركة اللمعة الذهبية (تحديث محرر)\n   ============================================================= */\n\nwindow.GALLERY_ITEMS = ${JSON.stringify(cleanItems, null, 2)};\n`;
+
+    var blob = new Blob([content], { type: "text/javascript;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "gallery-data.js";
+    a.click();
+    showToast("تم تنزيل ملف gallery-data.js المحدث!");
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function(){ t.classList.remove("show"); }, 3000);
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    initCatPreference();
+    var catSelect = document.getElementById("photo-cat");
+    if (catSelect) {
+      catSelect.addEventListener("change", function() {
+        localStorage.setItem("lumaa_last_selected_cat", this.value);
+      });
+    }
+    renderGallery();
+    loadInfoForm();
+  });
+</script>
+</body>
+</html>
