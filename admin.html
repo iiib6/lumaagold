@@ -208,8 +208,22 @@
   }
 
   function syncToCloud() {
-    var items = getItems();
+    var rawItems = getItems();
     var cfg = getConfig();
+
+    // تصفية وحذف الأوزان الضخمة القديمة تلقائياً من الـ localStorage لتنظيف الرفع السحابي
+    var items = rawItems.filter(function(item) {
+      if (item.src && item.src.length > 300000 && item.src.indexOf("data:image") === 0) {
+        return false;
+      }
+      return true;
+    });
+
+    if (items.length !== rawItems.length) {
+      localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
+      renderGallery();
+    }
+
     var payload = { items: items, config: cfg };
 
     showToast("جاري الرفع للحفظ السحابي... ☁️");
@@ -222,11 +236,11 @@
       if (res.ok) {
         showToast("تم الحفظ والتحديث السحابي لكل العالم بنجاح! ☁️✨");
       } else {
-        showToast("تم التحديث محلياً بنجاح! 📱");
+        showToast("تنبيه: تم الحفظ محلياً 📱");
       }
     }).catch(function(err) {
       console.log("Cloud sync note:", err);
-      showToast("تم التحديث محلياً بنجاح! 📱");
+      showToast("تم التحديث محلياً 📱");
     });
   }
 
