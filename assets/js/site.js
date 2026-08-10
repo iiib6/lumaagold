@@ -196,10 +196,15 @@
     if (!merchandiseItems.length) merchandiseItems = allItems;
 
     var cellsA = merchandiseItems.map(cell).join("");
+    var repeatTimes = (merchandiseItems.length < 5) ? 6 : 4;
+    var trackContent = "";
+    for (var r = 0; r < repeatTimes; r++) {
+      trackContent += cellsA;
+    }
 
-    // شريط واحد مفرد هادئ وأنظر للعين
+    // شريط واحد مفرد هادئ وأنظر للعين ومستمر دون انقطاع
     host.innerHTML =
-      '<div class="mq" style="--dur:100s"><div class="mq__track">' + cellsA + cellsA + "</div></div>";
+      '<div class="mq" style="--dur:100s"><div class="mq__track">' + trackContent + "</div></div>";
 
     host.querySelectorAll(".shot").forEach(function (f) {
       f.addEventListener("click", function () { open(+f.dataset.i); });
