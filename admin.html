@@ -286,34 +286,8 @@
   function compressImageFile(file, callback) {
     var reader = new FileReader();
     reader.onload = function(evt) {
-      var img = new Image();
-      img.onload = function() {
-        var canvas = document.createElement("canvas");
-        var maxDim = 850;
-        var width = img.width;
-        var height = img.height;
-
-        if (width > maxDim || height > maxDim) {
-          if (width > height) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          } else {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Ultra-feather light JPEG DataURL (~30KB per photo) for 60+ photos support
-        var compressedDataUrl = canvas.toDataURL("image/jpeg", 0.68);
-        callback(compressedDataUrl);
-      };
-      img.onerror = function() { callback(evt.target.result); };
-      img.src = evt.target.result;
+      // 100% Full Original Resolution & Full File Size (No downscaling)
+      callback(evt.target.result);
     };
     reader.readAsDataURL(file);
   }
@@ -524,30 +498,6 @@
     setTimeout(function(){ t.classList.remove("show"); }, 3000);
   }
 
-  function autoCleanHeavyPhotos() {
-    try {
-      var saved = localStorage.getItem("lumaa_gallery_items");
-      if (!saved) return;
-      var items = JSON.parse(saved);
-      var cleaned = [];
-      var changed = false;
-
-      items.forEach(function(item) {
-        if (item.src && item.src.length > 250000) {
-          changed = true;
-        } else {
-          cleaned.push(item);
-        }
-      });
-
-      if (changed) {
-        localStorage.setItem("lumaa_gallery_items", JSON.stringify(cleaned));
-        renderGallery();
-        syncToCloud();
-      }
-    } catch(e) {}
-  }
-
   document.addEventListener("DOMContentLoaded", function() {
     initCatPreference();
     var catSelect = document.getElementById("photo-cat");
@@ -556,7 +506,6 @@
         localStorage.setItem("lumaa_last_selected_cat", this.value);
       });
     }
-    autoCleanHeavyPhotos();
     renderGallery();
     loadInfoForm();
     fetchCloudDataAdmin();
