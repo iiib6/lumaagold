@@ -10,8 +10,104 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/admin.css">
+
+<style>
+  /* اللوحة مخفية لحد ما تنكتب كلمة السر */
+  body.locked > *:not(#gate) { display: none !important; }
+  #gate {
+    position: fixed; inset: 0; z-index: 9999;
+    display: none; place-items: center;
+    background: #0d1428;
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    padding: 24px;
+  }
+  body.locked #gate { display: grid; }
+  #gate form {
+    width: min(360px, 100%);
+    text-align: center;
+    display: grid; gap: 16px;
+  }
+  #gate img { width: 120px; margin: 0 auto 6px; }
+  #gate p { color: #ddd0b4; font-size: .9rem; margin: 0; font-weight: 300; }
+  #gate input {
+    width: 100%; padding: 14px 16px;
+    border-radius: 12px; border: 1px solid rgba(201,165,91,.35);
+    background: #16244c; color: #f7f3ea;
+    font: inherit; text-align: center; letter-spacing: .05em;
+  }
+  #gate input:focus { outline: none; border-color: #c9a55b; }
+  #gate button {
+    padding: 13px 18px; border: 0; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(112deg,#8e6f2c,#e8d3a0 38%,#c9a55b 70%,#8e6f2c);
+    color: #22190a; font: inherit; font-weight: 600;
+  }
+  #gate .err { color: #e88; font-size: .85rem; min-height: 1.2em; }
+</style>
 </head>
-<body>
+<body class="locked">
+
+<!-- ======================= بوابة الدخول للوحة التحكم =======================
+     ملاحظة صريحة: هذا حاجز يمنع الفضولي والزبون العادي، مو حماية حقيقية.
+     الموقع ملفات ثابتة، يعني اللي يفتح كود الصفحة يشوف البصمة. الحماية
+     الفعلية تحتاج سيرفر — التفاصيل بملف README.
+     لتغيير كلمة السر: بدّل قيمة PASS_HASH ببصمة SHA-256 للكلمة الجديدة.
+========================================================================== -->
+<div id="gate">
+  <form id="gate-form">
+    <img src="assets/logo/wordmark-on-navy.svg" alt="اللمعة الذهبية">
+    <p>هذي الصفحة خاصة بصاحب المحل</p>
+    <input type="password" id="gate-pass" placeholder="كلمة السر" autocomplete="current-password" autofocus>
+    <button type="submit">دخول</button>
+    <div class="err" id="gate-err"></div>
+  </form>
+</div>
+
+<script>
+(function () {
+  var PASS_HASH = "57dace10f9917834190ce2f1ebbcdd2b2ebcf3b0cfd5211e16b2981651f806bc";
+  var SESSION_KEY = "lumaa_panel_ok";
+
+  function sha256(text) {
+    if (!(window.crypto && crypto.subtle)) {
+      // يصير بس لو انفتحت الصفحة عبر http غير آمن — على الموقع الحي دائماً https
+      return Promise.reject(new Error("insecure-context"));
+    }
+    var bytes = new TextEncoder().encode(text);
+    return crypto.subtle.digest("SHA-256", bytes).then(function (buf) {
+      return Array.from(new Uint8Array(buf))
+        .map(function (b) { return b.toString(16).padStart(2, "0"); })
+        .join("");
+    });
+  }
+
+  function unlock() {
+    document.body.classList.remove("locked");
+    var g = document.getElementById("gate");
+    if (g) g.remove();
+  }
+
+  try {
+    if (sessionStorage.getItem(SESSION_KEY) === PASS_HASH) { unlock(); return; }
+  } catch (e) {}
+
+  document.getElementById("gate-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = document.getElementById("gate-err");
+    err.textContent = "";
+    sha256(document.getElementById("gate-pass").value).then(function (h) {
+      if (h === PASS_HASH) {
+        try { sessionStorage.setItem(SESSION_KEY, h); } catch (e) {}
+        unlock();
+      } else {
+        err.textContent = "كلمة السر غلط";
+        document.getElementById("gate-pass").value = "";
+      }
+    }).catch(function () {
+      err.textContent = "افتح الصفحة عبر رابط https";
+    });
+  });
+})();
+</script>
 
 <!-- Header -->
 <header class="admin-header">

@@ -1,9 +1,8 @@
 User-agent: *
 Allow: /
 
-# صفحات داخلية ما تنفع بنتائج البحث
-Disallow: /admin.html
-Disallow: /logo.html
-Disallow: /presentation.html
+# ملاحظة: ما نكتب هنا مسارات الصفحات الخاصة — robots.txt ملف عام
+# وأي واحد يفتحه يشوف المسارات المكتوبة بيه. المنع يتم بوسم
+# <meta name="robots" content="noindex"> داخل الصفحة نفسها.
 
 Sitemap: https://lumaagold.onrender.com/sitemap.xml
