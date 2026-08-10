@@ -200,8 +200,10 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
   padding: 6px 6px 6px 14px;
   border-radius: 999px;
   background: rgba(13, 20, 40, .72);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  /* نصف قطر أقل وبدون saturate — الشريط ثابت فوق محتوى متحرك،
+     فكل زيادة بالضبابية تنحسب كل فريم حتى والمستخدم ما يمرّر. */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--hair-d);
   box-shadow: 0 20px 44px -26px rgba(0, 0, 0, .9);
   transition: background var(--t-l), box-shadow var(--t-l);
@@ -313,14 +315,26 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
   66%      { transform: translate3d(-1.5%, 2%, 0) scale(1.02) rotate(-1.2deg); }
 }
 
-/* مسحة ضوء ذهبية تمرّ ببطء */
+/* مسحة ضوء ذهبية تمرّ ببطء.
+   تتحرك بـ transform مو background-position — الثانية تجبر المتصفح
+   يعيد رسم كامل الواجهة كل فريم وتسبب تقطيع واضح على الموبايل. */
 .sheen {
   position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background: linear-gradient(104deg, transparent 42%, rgba(232, 211, 160, .075) 50%, transparent 58%);
-  background-size: 260% 100%;
+  overflow: hidden;
+}
+.sheen::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 60%;
+  background: linear-gradient(104deg, transparent, rgba(232, 211, 160, .085) 50%, transparent);
   animation: sheen 11s linear infinite;
 }
-@keyframes sheen { from { background-position: 210% 0; } to { background-position: -70% 0; } }
+@keyframes sheen {
+  from { transform: translate3d(-100%, 0, 0); }
+  to   { transform: translate3d(270%, 0, 0); }
+}
 
 /* شذرات ذهبية عائمة */
 .speck { position: absolute; width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); opacity: .55; pointer-events: none; }
@@ -454,7 +468,9 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
   gap: 18px;
   align-items: center;
   width: max-content;
-  will-change: transform;
+  /* بدون will-change — المسار عرضه آلاف البكسلات، وحجزه كطبقة GPU دائمة
+     يستهلك ذاكرة ضخمة ويخلي الموبايل يطيح لمسار رسم أبطأ.
+     الـ translate3d بالحركة نفسها كافي حتى يرفعه للمعالج الرسومي. */
   animation: slide var(--dur, 115s) linear infinite;
 }
 .mq--rev .mq__track { animation-direction: reverse; }
@@ -487,13 +503,11 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
   height: 100%;
   object-fit: contain;
   border-radius: 12px;
-  filter: contrast(1.04) brightness(1.03);
-  transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), filter 0.4s ease;
+  /* بدون filter هنا — الفلتر على صور جوّا شريط متحرك يجبر المتصفح
+     يعيد معالجة كل صورة بكل فريم. التباين نضبطه بالصورة نفسها. */
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
 }
-.shot:hover img {
-  transform: scale(1.03);
-  filter: contrast(1.07) brightness(1.06);
-}
+.shot:hover img { transform: scale(1.03); }
 .shot figcaption {
   position: absolute; inset-inline: 0; bottom: 0;
   padding: 28px 18px 14px;
@@ -572,8 +586,12 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
 body:has(.sheet.on) .dock { opacity: 0; transform: translateY(14px); pointer-events: none; }
 
 /* ---------------------------- الظهور بالتمرير ---------------------------- */
-.rise { opacity: 0; transform: translateY(38px); filter: blur(8px); transition: opacity .9s var(--ease), transform .9s var(--ease), filter .9s var(--ease); }
+.rise { opacity: 0; transform: translateY(38px); filter: blur(5px); transition: opacity .9s var(--ease), transform .9s var(--ease), filter .9s var(--ease); }
 .rise.in { opacity: 1; transform: none; filter: none; }
+/* على الموبايل نكتفي بالإزاحة والشفافية — الضبابية مكلفة على معالجات الهواتف */
+@media (max-width: 720px) {
+  .rise { filter: none; transition: opacity .7s var(--ease), transform .7s var(--ease); }
+}
 .rise[data-d="1"] { transition-delay: .09s; }
 .rise[data-d="2"] { transition-delay: .18s; }
 .rise[data-d="3"] { transition-delay: .27s; }

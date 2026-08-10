@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>لوحة التحكم — شركة اللمعة الذهبية</title>
 <link rel="icon" href="assets/logo/mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -190,8 +191,51 @@
 
   var CLOUD_URL = "https://jsonblob.com/api/jsonBlob/019fec1b-bbf1-7597-8272-a86fb642f860";
 
+  /* ===========================================================
+     إعدادات استضافة الصور (Cloudinary)
+     -----------------------------------------------------------
+     الصور ما تنحفظ جوّا ملف JSON — تنرفع لكلاودناري ونخزن الرابط بس.
+     املأ القيمتين تحت من حسابك (الخطوات بملف README):
+       cloudName    : اسم السحابة — يطلعلك بأعلى لوحة تحكم كلاودناري
+       uploadPreset : اسم الـ Unsigned upload preset اللي تسويه
+     =========================================================== */
+  var CLOUDINARY = {
+    cloudName: "",
+    uploadPreset: ""
+  };
+
+  function cloudinaryReady() {
+    return !!(CLOUDINARY.cloudName && CLOUDINARY.uploadPreset);
+  }
+
+  // يضيف تحويلات كلاودناري: صيغة تلقائية (WebP/AVIF) + جودة تلقائية + عرض أقصى
+  function optimizedUrl(url) {
+    return url.indexOf("/image/upload/") === -1
+      ? url
+      : url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1200/");
+  }
+
+  function uploadToCloudinary(blob) {
+    return new Promise(function (resolve, reject) {
+      if (!cloudinaryReady()) { reject(new Error("not-configured")); return; }
+      var fd = new FormData();
+      fd.append("file", blob);
+      fd.append("upload_preset", CLOUDINARY.uploadPreset);
+      fetch("https://api.cloudinary.com/v1_1/" + CLOUDINARY.cloudName + "/image/upload", {
+        method: "POST",
+        body: fd
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.secure_url) resolve(optimizedUrl(d.secure_url));
+          else reject(new Error((d && d.error && d.error.message) || "upload-failed"));
+        })
+        .catch(reject);
+    });
+  }
+
   function fetchCloudDataAdmin() {
-    fetch(CLOUD_URL)
+    fetch(CLOUD_URL + "?t=" + Date.now(), { cache: "no-store" })
       .then(function(res) { return res.json(); })
       .then(function(data) {
         if (!data) return;
@@ -211,17 +255,15 @@
     var rawItems = getItems();
     var cfg = getConfig();
 
-    // تصفية وحذف الأوزان الضخمة القديمة تلقائياً من الـ localStorage لتنظيف الرفع السحابي
-    var items = rawItems.filter(function(item) {
-      if (item.src && item.src.length > 300000 && item.src.indexOf("data:image") === 0) {
-        return false;
-      }
-      return true;
+    /* الصور المخزّنة كـ Base64 ما تنرفع للسحابة — تكبّر الملف لدرجة يفشل الرفع.
+       ما ننحذفها من الجهاز، بس ننبّه إنها ما راح تظهر لباقي الزبائن. */
+    var items = rawItems.filter(function (item) {
+      return !(item.src && item.src.indexOf("data:image") === 0);
     });
 
-    if (items.length !== rawItems.length) {
-      localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
-      renderGallery();
+    var skipped = rawItems.length - items.length;
+    if (skipped > 0) {
+      showToast("⚠️ " + skipped + " صورة محفوظة بجهازك فقط ولن يشوفها الزبائن — أعد رفعها بعد ضبط Cloudinary");
     }
 
     var payload = { items: items, config: cfg };
@@ -297,13 +339,14 @@
     }
   }
 
+  /* يصغّر الصورة محلياً قبل الرفع ويرجّعها Blob — أسرع بالرفع وأخف بالباندويث.
+     كلاودناري بعدها يتكفّل بالصيغة والجودة حسب جهاز الزبون. */
   function compressImageFile(file, callback) {
     var reader = new FileReader();
-    reader.onload = function(evt) {
+    reader.onload = function (evt) {
       var img = new Image();
-      img.onload = function() {
-        var canvas = document.createElement("canvas");
-        var maxDim = 1600; // دقة فائقة الوضوح (2K/4K) للشاشات والأيفون
+      img.onload = function () {
+        var maxDim = 1600; // دقة عالية — كلاودناري يصغّرها للعرض المطلوب
         var width = img.width;
         var height = img.height;
 
@@ -317,15 +360,16 @@
           }
         }
 
+        var canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
 
-        var compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
-        callback(compressedDataUrl);
+        canvas.toBlob(function (blob) {
+          callback(blob || file);
+        }, "image/jpeg", 0.85);
       };
-      img.onerror = function() { callback(evt.target.result); };
+      img.onerror = function () { callback(file); };
       img.src = evt.target.result;
     };
     reader.readAsDataURL(file);
@@ -340,11 +384,12 @@
     container.innerHTML = "";
     container.style.display = "flex";
 
-    files.forEach(function(file) {
-      compressImageFile(file, function(dataUrl) {
-        selectedFilesDataUrls.push(dataUrl);
+    files.forEach(function (file) {
+      compressImageFile(file, function (blob) {
+        selectedFilesDataUrls.push(blob);
         var img = document.createElement("img");
-        img.src = dataUrl;
+        img.src = URL.createObjectURL(blob);
+        img.onload = function () { URL.revokeObjectURL(img.src); };
         img.style.height = "75px";
         img.style.width = "75px";
         img.style.objectFit = "cover";
@@ -372,38 +417,57 @@
     var baseEn = document.getElementById("photo-en").value.trim();
     var tall = document.getElementById("photo-tall").value === "true";
 
-    var items = getItems();
+    if (!cloudinaryReady()) {
+      alert(
+        "استضافة الصور مو مضبوطة بعد.\n\n" +
+        "افتح ملف admin.html ودوّر على CLOUDINARY بأعلى السكربت، " +
+        "وحط اسم السحابة واسم الـ upload preset.\n\n" +
+        "الخطوات كاملة موجودة بملف README تحت عنوان «ضبط استضافة الصور»."
+      );
+      return;
+    }
+
     var count = selectedFilesDataUrls.length;
+    var blobs = selectedFilesDataUrls.slice();
 
-    selectedFilesDataUrls.forEach(function(dataUrl, i) {
-      var suffix = (count > 1) ? (" (" + (i + 1) + ")") : "";
-      var ar = baseAr ? (baseAr + suffix) : ((cat === "shop") ? ("صورة واجهة المحل" + suffix) : ("مجوهرات ذهب" + suffix));
-      var en = baseEn ? (baseEn + suffix) : ((cat === "shop") ? ("Showroom Facade" + suffix) : ("Gold Jewelry" + suffix));
+    var btn = e.target.querySelector("[type=submit]");
+    if (btn) { btn.disabled = true; }
+    showToast("جاري رفع " + count + " صورة... ⏳");
 
-      items.unshift({
-        src: dataUrl,
-        ar: ar,
-        en: en,
-        cat: cat,
-        tall: tall
+    Promise.all(blobs.map(function (blob) { return uploadToCloudinary(blob); }))
+      .then(function (urls) {
+        var items = getItems();
+
+        urls.forEach(function (url, i) {
+          var suffix = (count > 1) ? (" (" + (i + 1) + ")") : "";
+          var ar = baseAr ? (baseAr + suffix) : ((cat === "shop") ? ("صورة واجهة المحل" + suffix) : ("مجوهرات ذهب" + suffix));
+          var en = baseEn ? (baseEn + suffix) : ((cat === "shop") ? ("Showroom Facade" + suffix) : ("Gold Jewelry" + suffix));
+
+          items.unshift({ src: url, ar: ar, en: en, cat: cat, tall: tall });
+        });
+
+        saveItems(items);
+
+        document.getElementById("photo-ar").value = "";
+        document.getElementById("photo-en").value = "";
+        document.getElementById("photo-file-input").value = "";
+        var container = document.getElementById("file-preview-container");
+        container.innerHTML = "";
+        container.style.display = "none";
+        selectedFilesDataUrls = [];
+
+        catSelect.value = cat; // يبقى الاختيار ثابت
+        showToast("تم رفع " + count + " صورة ونشرها لكل الزبائن! 📸✨");
+      })
+      .catch(function (err) {
+        console.error("Upload failed:", err);
+        alert("فشل رفع الصور: " + (err && err.message ? err.message : "خطأ غير معروف") +
+              "\n\nتأكد إن الـ upload preset نوعه Unsigned.");
+        showToast("فشل الرفع ❌");
+      })
+      .then(function () {
+        if (btn) { btn.disabled = false; }
       });
-    });
-
-    saveItems(items);
-
-    // تصفير مدخل الملف والنصوص دون تغيير الخيار المحدد (يبقى ثابتاً)
-    document.getElementById("photo-ar").value = "";
-    document.getElementById("photo-en").value = "";
-    document.getElementById("photo-file-input").value = "";
-    var container = document.getElementById("file-preview-container");
-    container.innerHTML = "";
-    container.style.display = "none";
-    selectedFilesDataUrls = [];
-
-    // تأكيد بقاء الاختيار ثابتاً
-    catSelect.value = cat;
-
-    showToast("تم إضافة " + count + " صورة/صور بنجاح! 📸");
   }
 
   function moveItem(index, dir) {

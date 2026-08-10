@@ -149,9 +149,11 @@
 
   var G = { items: [], i: 0 };
 
+  /* ملاحظة: بدون loading="lazy" هنا عن قصد — الصور داخل شريط متحرك تدخل وتطلع
+     من الشاشة باستمرار، فالتحميل الكسول يخلي المتصفح يفك تشفيرها كل دورة ويتقطّع الشريط. */
   function cell(x) {
     return '<figure class="shot" data-i="' + x._i + '" tabindex="0" role="button">' +
-      '<img src="' + x.src + '" alt="' + x.ar + '" loading="lazy" data-guard>' +
+      '<img src="' + x.src + '" alt="' + x.ar + '" decoding="async" data-guard>' +
       '<figcaption data-ar="' + x.ar + '" data-en="' + x.en + '">' + x.ar + "</figcaption>" +
       "</figure>";
   }
@@ -229,7 +231,8 @@
   var CLOUD_URL = "https://jsonblob.com/api/jsonBlob/019fec1b-bbf1-7597-8272-a86fb642f860";
 
   function fetchCloudData() {
-    fetch(CLOUD_URL)
+    // بدون كسر الكاش المتصفح ممكن يخدم نسخة قديمة فما تظهر الصور الجديدة
+    fetch(CLOUD_URL + "?t=" + Date.now(), { cache: "no-store" })
       .then(function(res) { return res.json(); })
       .then(function(data) {
         if (!data) return;
