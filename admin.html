@@ -524,6 +524,30 @@
     setTimeout(function(){ t.classList.remove("show"); }, 3000);
   }
 
+  function autoCleanHeavyPhotos() {
+    try {
+      var saved = localStorage.getItem("lumaa_gallery_items");
+      if (!saved) return;
+      var items = JSON.parse(saved);
+      var cleaned = [];
+      var changed = false;
+
+      items.forEach(function(item) {
+        if (item.src && item.src.length > 250000) {
+          changed = true;
+        } else {
+          cleaned.push(item);
+        }
+      });
+
+      if (changed) {
+        localStorage.setItem("lumaa_gallery_items", JSON.stringify(cleaned));
+        renderGallery();
+        syncToCloud();
+      }
+    } catch(e) {}
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     initCatPreference();
     var catSelect = document.getElementById("photo-cat");
@@ -532,8 +556,10 @@
         localStorage.setItem("lumaa_last_selected_cat", this.value);
       });
     }
+    autoCleanHeavyPhotos();
     renderGallery();
     loadInfoForm();
+    fetchCloudDataAdmin();
   });
 </script>
 </body>
