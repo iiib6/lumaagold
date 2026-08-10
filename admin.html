@@ -212,14 +212,21 @@
     var cfg = getConfig();
     var payload = { items: items, config: cfg };
 
+    showToast("جاري الرفع للحفظ السحابي... ☁️");
+
     fetch(CLOUD_URL, {
       method: "PUT",
       headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json" },
       body: JSON.stringify(payload)
     }).then(function(res) {
-      console.log("Cloud sync OK");
+      if (res.ok) {
+        showToast("تم الحفظ والتحديث السحابي لكل العالم بنجاح! ☁️✨");
+      } else {
+        showToast("تم التحديث محلياً بنجاح! 📱");
+      }
     }).catch(function(err) {
       console.log("Cloud sync note:", err);
+      showToast("تم التحديث محلياً بنجاح! 📱");
     });
   }
 
@@ -276,6 +283,40 @@
     }
   }
 
+  function compressImageFile(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement("canvas");
+        var maxDim = 1200;
+        var width = img.width;
+        var height = img.height;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        var compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        callback(compressedDataUrl);
+      };
+      img.onerror = function() { callback(evt.target.result); };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   function handleFileSelect(e) {
     var files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -286,19 +327,17 @@
     container.style.display = "flex";
 
     files.forEach(function(file) {
-      var reader = new FileReader();
-      reader.onload = function(evt) {
-        selectedFilesDataUrls.push(evt.target.result);
+      compressImageFile(file, function(dataUrl) {
+        selectedFilesDataUrls.push(dataUrl);
         var img = document.createElement("img");
-        img.src = evt.target.result;
+        img.src = dataUrl;
         img.style.height = "75px";
         img.style.width = "75px";
         img.style.objectFit = "cover";
         img.style.borderRadius = "8px";
         img.style.border = "1px solid var(--gold)";
         container.appendChild(img);
-      };
-      reader.readAsDataURL(file);
+      });
     });
   }
 
