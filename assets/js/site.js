@@ -248,29 +248,28 @@
     if (typeof firebase === 'undefined') return;
     
     var db = firebase.firestore();
-    db.collection("site_data").doc("main").get()
-      .then(function(doc) {
-        if (!doc.exists) return;
-        var data = doc.data();
-        var updated = false;
+    // استخدام الاستماع الفوري onSnapshot حتى تحدّث أجهزة الموبايل فوراً دون الحاجة لتحديث الصفحة
+    db.collection("site_data").doc("main").onSnapshot(function(doc) {
+      if (!doc.exists) return;
+      var data = doc.data();
+      var updated = false;
 
-        if (Array.isArray(data.items) && data.items.length > 0) {
-          localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
-          updated = true;
-        }
+      if (Array.isArray(data.items) && data.items.length > 0) {
+        localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
+        updated = true;
+      }
 
-        if (data.config && typeof data.config === "object") {
-          localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
-          applyDynamicConfig();
-        }
+      if (data.config && typeof data.config === "object") {
+        localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
+        applyDynamicConfig();
+      }
 
-        if (updated) {
-          initGallerySections();
-        }
-      })
-      .catch(function(err) {
-        console.log("Firebase fetch note:", err);
-      });
+      if (updated) {
+        initGallerySections();
+      }
+    }, function(err) {
+      console.log("Firebase fetch note:", err);
+    });
   }
 
   function getGalleryItems() {
