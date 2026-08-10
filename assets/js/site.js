@@ -220,7 +220,35 @@
     renderMerchandiseMarquee(allItems);
   }
 
-  /* ------------------------------- تحميل البيانات الديناميكية --------------------------------- */
+  /* ------------------------------- الربط السحابي الحي --------------------------------- */
+  var CLOUD_URL = "https://jsonblob.com/api/jsonBlob/019fec1b-bbf1-7597-8272-a86fb642f860";
+
+  function fetchCloudData() {
+    fetch(CLOUD_URL)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (!data) return;
+        var updated = false;
+
+        if (Array.isArray(data.items) && data.items.length > 0) {
+          localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
+          updated = true;
+        }
+
+        if (data.config && typeof data.config === "object" && Object.keys(data.config).length > 0) {
+          localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
+          applyDynamicConfig();
+        }
+
+        if (updated) {
+          initGallerySections();
+        }
+      })
+      .catch(function(err) {
+        console.log("Cloud fetch note:", err);
+      });
+  }
+
   function getGalleryItems() {
     try {
       var saved = localStorage.getItem("lumaa_gallery_items");
@@ -402,5 +430,6 @@
     initImages();
     initRise();
     initSpy();
+    fetchCloudData();
   });
 })();

@@ -188,6 +188,41 @@
     gold: "✨ البضاعة والمصوغات"
   };
 
+  var CLOUD_URL = "https://jsonblob.com/api/jsonBlob/019fec1b-bbf1-7597-8272-a86fb642f860";
+
+  function fetchCloudDataAdmin() {
+    fetch(CLOUD_URL)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (!data) return;
+        if (Array.isArray(data.items) && data.items.length > 0) {
+          localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
+        }
+        if (data.config && typeof data.config === "object" && Object.keys(data.config).length > 0) {
+          localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
+        }
+        renderGallery();
+        loadInfoForm();
+      })
+      .catch(function(e) {});
+  }
+
+  function syncToCloud() {
+    var items = getItems();
+    var cfg = getConfig();
+    var payload = { items: items, config: cfg };
+
+    fetch(CLOUD_URL, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function(res) {
+      console.log("Cloud sync OK");
+    }).catch(function(err) {
+      console.log("Cloud sync note:", err);
+    });
+  }
+
   function getItems() {
     try {
       var saved = localStorage.getItem("lumaa_gallery_items");
@@ -202,7 +237,8 @@
   function saveItems(items) {
     localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
     renderGallery();
-    showToast("تم تحديث معرض الصور بنجاح!");
+    syncToCloud();
+    showToast("تم الحفظ والتحديث السحابي لكل الزبائن فوراً! ☁️✨");
   }
 
   function getConfig() {
@@ -405,7 +441,8 @@
     cfg.hero_slogan_ar = document.getElementById("cfg-slogan").value.trim();
 
     localStorage.setItem("lumaa_site_config", JSON.stringify(cfg));
-    showToast("تم حفظ معلومات الاتصال والموقع بنجاح!");
+    syncToCloud();
+    showToast("تم حفظ وتحديث المعلومات سحابياً بنجاح! ☁️✨");
   }
 
   function handleResetDefault() {
@@ -414,6 +451,7 @@
     localStorage.removeItem("lumaa_site_config");
     renderGallery();
     loadInfoForm();
+    syncToCloud();
     showToast("تمت استعادة الإعدادات الأصلية بنجاح!");
   }
 
