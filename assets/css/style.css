@@ -432,11 +432,11 @@ h1, h2, h3 { font-family: var(--kufi); font-weight: 700; line-height: 1.35; marg
   transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), filter 0.4s ease;
 }
 .shop-card img[src*="company-sign"] {
-  transform: scale(1.08) rotate(-1.2deg);
+  transform: scale(1.09) rotate(1.4deg);
   object-position: center 42%;
 }
 .hero__shot img[src*="company-sign"] {
-  transform: scale(1.08) rotate(-1.2deg);
+  transform: scale(1.09) rotate(1.4deg);
   object-position: center 42%;
 }
 .shop-card:hover img {
