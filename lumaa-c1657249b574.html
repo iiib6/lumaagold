@@ -309,51 +309,61 @@
   const db = firebase.firestore();
 
   function fetchCloudDataAdmin() {
-    db.collection("site_data").doc("main").get()
-      .then(function(doc) {
-        if (doc.exists) {
-          var data = doc.data();
-          if (Array.isArray(data.items) && data.items.length > 0) {
-            localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
-          }
-          if (data.config && typeof data.config === "object") {
-            localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
-          }
-          renderGallery();
-          loadInfoForm();
-        }
-      })
-      .catch(function(e) {
-        console.error("Error fetching data from Firestore:", e);
-      });
+    db.collection("site_data").doc("main").get().then(function(doc) {
+      if (doc.exists && doc.data().config) {
+        localStorage.setItem("lumaa_site_config", JSON.stringify(doc.data().config));
+        loadInfoForm();
+      }
+    }).catch(function(e){ console.error(e); });
+
+    db.collection("photos").get().then(function(snapshot) {
+      if (!snapshot.empty) {
+        var items = [];
+        snapshot.forEach(function(d) { items.push(d.data()); });
+        items.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
+        localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
+        renderGallery();
+      }
+    }).catch(function(e){ console.error(e); });
   }
 
   function syncToCloud() {
     var rawItems = getItems();
     var cfg = getConfig();
 
-    var payload = { 
-      items: rawItems, 
+    showToast("جاري التحديث والنشر لجميع أجهزة الموبايل... ☁️");
+
+    // 1. حفظ الإعدادات
+    db.collection("site_data").doc("main").set({
       config: cfg,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
+    }).catch(function(e){ console.error(e); });
 
-    showToast("جاري الحفظ في السحابة... ☁️");
-
-    db.collection("site_data").doc("main").set(payload)
-      .then(function() {
-        showToast("تم الحفظ والتحديث لكل العالم بنجاح! ☁️✨");
-      })
-      .catch(function(err) {
-        console.error("Firebase sync error:", err);
-        showToast("تنبيه: حجم البيانات كبير جداً، جاري المحاولة بنظام الأجزاء... ⏳");
-        
-        // إذا كان الحجم كبيراً على وثيقة واحدة، نحفظ الأساسيات
-        db.collection("site_data").doc("main").set({
-          config: cfg,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    // 2. حفظ كل صورة كـ Document منفصل لتفادي حد 1MB والرفع لكل الموبايلات
+    db.collection("photos").get().then(function(snapshot) {
+      var batch = db.batch();
+      snapshot.forEach(function(d) {
+        batch.delete(d.ref);
+      });
+      return batch.commit();
+    }).then(function() {
+      var promises = rawItems.map(function(item, idx) {
+        return db.collection("photos").doc("img_" + (1000 + idx)).set({
+          src: item.src,
+          ar: item.ar,
+          en: item.en,
+          cat: item.cat,
+          tall: !!item.tall,
+          order: idx
         });
       });
+      return Promise.all(promises);
+    }).then(function() {
+      showToast("تم التحديث والنشر لكل الموبايلات والحواسيب بنجاح! ☁️✨");
+    }).catch(function(err) {
+      console.error("Firebase sync error:", err);
+      showToast("خطأ في المزامنة السحابية ❌");
+    });
   }
 
   function getItems() {

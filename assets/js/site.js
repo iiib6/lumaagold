@@ -248,27 +248,30 @@
     if (typeof firebase === 'undefined') return;
     
     var db = firebase.firestore();
-    // استخدام الاستماع الفوري onSnapshot حتى تحدّث أجهزة الموبايل فوراً دون الحاجة لتحديث الصفحة
+
+    // الاستماع لمعلومات المحل والتواصل
     db.collection("site_data").doc("main").onSnapshot(function(doc) {
-      if (!doc.exists) return;
-      var data = doc.data();
-      var updated = false;
-
-      if (Array.isArray(data.items) && data.items.length > 0) {
-        localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
-        updated = true;
-      }
-
-      if (data.config && typeof data.config === "object") {
-        localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
+      if (doc.exists && doc.data().config) {
+        localStorage.setItem("lumaa_site_config", JSON.stringify(doc.data().config));
         applyDynamicConfig();
       }
+    }, function(err){ console.log("Config fetch note:", err); });
 
-      if (updated) {
+    // الاستماع المباشر الفوري لمجموعة الصور (Photos Collection)
+    db.collection("photos").onSnapshot(function(snapshot) {
+      if (snapshot.empty) return;
+      var items = [];
+      snapshot.forEach(function(d) {
+        items.push(d.data());
+      });
+      items.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
+
+      if (items.length > 0) {
+        localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
         initGallerySections();
       }
     }, function(err) {
-      console.log("Firebase fetch note:", err);
+      console.log("Firebase fetch photos error:", err);
     });
   }
 
