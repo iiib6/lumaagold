@@ -1,0 +1,209 @@
+{
+  "config": {
+    "phone": "0782 642 0404",
+    "whatsapp": "+964 782 642 0404",
+    "email": "jdukeoldid@gmail.com",
+    "instagram": "@os__mk",
+    "address_ar": "الأنبار – الفلوجة – النزيزة – السوق العصري",
+    "hero_slogan_ar": "لاستيراد الذهب والمجوهرات. ذهب أصيل، وزنٌ أمام عينك، وسعرٌ مربوط بسعر السوق يوم المعاملة."
+  },
+  "items": [
+    {
+      "src": "/uploads/1786390052169_2023.jpg",
+      "ar": "مجوهرات ذهب (1)",
+      "en": "Gold Jewelry (1)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052171_8119.jpg",
+      "ar": "مجوهرات ذهب (2)",
+      "en": "Gold Jewelry (2)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052176_4618.jpg",
+      "ar": "مجوهرات ذهب (3)",
+      "en": "Gold Jewelry (3)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052179_3028.jpg",
+      "ar": "مجوهرات ذهب (4)",
+      "en": "Gold Jewelry (4)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052180_3626.jpg",
+      "ar": "مجوهرات ذهب (5)",
+      "en": "Gold Jewelry (5)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052182_1370.jpg",
+      "ar": "مجوهرات ذهب (6)",
+      "en": "Gold Jewelry (6)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052184_4766.jpg",
+      "ar": "مجوهرات ذهب (7)",
+      "en": "Gold Jewelry (7)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052186_1791.jpg",
+      "ar": "مجوهرات ذهب (8)",
+      "en": "Gold Jewelry (8)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052187_8015.jpg",
+      "ar": "مجوهرات ذهب (9)",
+      "en": "Gold Jewelry (9)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390052188_827.jpg",
+      "ar": "مجوهرات ذهب (10)",
+      "en": "Gold Jewelry (10)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038259_4127.jpg",
+      "ar": "مجوهرات ذهب (1)",
+      "en": "Gold Jewelry (1)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038263_7772.jpg",
+      "ar": "مجوهرات ذهب (2)",
+      "en": "Gold Jewelry (2)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038267_758.jpg",
+      "ar": "مجوهرات ذهب (3)",
+      "en": "Gold Jewelry (3)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038269_6356.jpg",
+      "ar": "مجوهرات ذهب (4)",
+      "en": "Gold Jewelry (4)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038271_6109.jpg",
+      "ar": "مجوهرات ذهب (5)",
+      "en": "Gold Jewelry (5)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038273_4335.jpg",
+      "ar": "مجوهرات ذهب (6)",
+      "en": "Gold Jewelry (6)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038276_8217.jpg",
+      "ar": "مجوهرات ذهب (7)",
+      "en": "Gold Jewelry (7)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038278_6728.jpg",
+      "ar": "مجوهرات ذهب (8)",
+      "en": "Gold Jewelry (8)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038280_9146.jpg",
+      "ar": "مجوهرات ذهب (9)",
+      "en": "Gold Jewelry (9)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038282_4067.jpg",
+      "ar": "مجوهرات ذهب (10)",
+      "en": "Gold Jewelry (10)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038284_2623.jpg",
+      "ar": "مجوهرات ذهب (11)",
+      "en": "Gold Jewelry (11)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038285_2130.jpg",
+      "ar": "مجوهرات ذهب (12)",
+      "en": "Gold Jewelry (12)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038286_2280.jpg",
+      "ar": "مجوهرات ذهب (13)",
+      "en": "Gold Jewelry (13)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038295_2016.jpg",
+      "ar": "مجوهرات ذهب (14)",
+      "en": "Gold Jewelry (14)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "/uploads/1786390038297_9178.jpg",
+      "ar": "مجوهرات ذهب (15)",
+      "en": "Gold Jewelry (15)",
+      "cat": "merchandise",
+      "tall": false
+    },
+    {
+      "src": "images/shop-front.jpg",
+      "ar": "واجهة المعرض من الخارج",
+      "en": "Showroom Exterior",
+      "cat": "shop",
+      "featured": true
+    },
+    {
+      "src": "images/company-sign.jpg",
+      "ar": "لوحة شركة اللمعة الذهبية",
+      "en": "Company Signboard",
+      "cat": "shop",
+      "featured": true
+    },
+    {
+      "src": "images/company-display.jpg",
+      "ar": "الواجهة الزجاجية للمحل",
+      "en": "Glass Display Facade",
+      "cat": "shop",
+      "tall": true,
+      "featured": true
+    }
+  ]
+}

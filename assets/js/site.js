@@ -227,52 +227,30 @@
     renderMerchandiseMarquee(allItems);
   }
 
-  /* ------------------------------- الربط السحابي الحي (Firebase) --------------------------------- */
-  const firebaseConfig = {
-    apiKey: "AIzaSyC59tDLTIm5Yt6DyzpvDJV6BurRPFRDzkc",
-    authDomain: "lumaagoldd.firebaseapp.com",
-    projectId: "lumaagoldd",
-    storageBucket: "lumaagoldd.firebasestorage.app",
-    messagingSenderId: "297249589935",
-    appId: "1:297249589935:web:3317b880dcc113b510e25a",
-    measurementId: "G-YB8WFM32C7"
-  };
-
-  if (typeof firebase !== 'undefined') {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-  }
-
   function fetchCloudData() {
-    if (typeof firebase === 'undefined') return;
-    
-    var db = firebase.firestore();
+    fetch('/api/data?t=' + Date.now())
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (!data) return;
+        var updated = false;
 
-    // الاستماع لمعلومات المحل والتواصل
-    db.collection("site_data").doc("main").onSnapshot(function(doc) {
-      if (doc.exists && doc.data().config) {
-        localStorage.setItem("lumaa_site_config", JSON.stringify(doc.data().config));
-        applyDynamicConfig();
-      }
-    }, function(err){ console.log("Config fetch note:", err); });
+        if (Array.isArray(data.items) && data.items.length > 0) {
+          localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
+          updated = true;
+        }
 
-    // الاستماع المباشر الفوري لمجموعة الصور (Photos Collection)
-    db.collection("photos").onSnapshot(function(snapshot) {
-      if (snapshot.empty) return;
-      var items = [];
-      snapshot.forEach(function(d) {
-        items.push(d.data());
+        if (data.config && typeof data.config === "object") {
+          localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
+          applyDynamicConfig();
+        }
+
+        if (updated) {
+          initGallerySections();
+        }
+      })
+      .catch(function(err) {
+        console.log("API fetch note:", err);
       });
-      items.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
-
-      if (items.length > 0) {
-        localStorage.setItem("lumaa_gallery_items", JSON.stringify(items));
-        initGallerySections();
-      }
-    }, function(err) {
-      console.log("Firebase fetch photos error:", err);
-    });
   }
 
   function getGalleryItems() {
