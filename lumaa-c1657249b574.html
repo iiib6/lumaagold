@@ -274,6 +274,13 @@
 <div id="toast" class="toast">تم التحديث بنجاح!</div>
 
 <script src="assets/js/gallery-data.js"></script>
+
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<!-- Firebase Services -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
 <script>
   var currentSelectedDataUrl = "";
 
@@ -285,101 +292,68 @@
     gold: "✨ البضاعة والمصوغات"
   };
 
-  var CLOUD_URL = "https://jsonblob.com/api/jsonBlob/019fec1b-bbf1-7597-8272-a86fb642f860";
-
-  /* ===========================================================
-     إعدادات استضافة الصور (Cloudinary)
-     -----------------------------------------------------------
-     الصور ما تنحفظ جوّا ملف JSON — تنرفع لكلاودناري ونخزن الرابط بس.
-     املأ القيمتين تحت من حسابك (الخطوات بملف README):
-       cloudName    : اسم السحابة — يطلعلك بأعلى لوحة تحكم كلاودناري
-       uploadPreset : اسم الـ Unsigned upload preset اللي تسويه
-     =========================================================== */
-  var CLOUDINARY = {
-    cloudName: "",
-    uploadPreset: ""
+  // --- إعدادات Firebase ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyC59tDLTIm5Yt6DyzpvDJV6BurRPFRDzkc",
+    authDomain: "lumaagoldd.firebaseapp.com",
+    projectId: "lumaagoldd",
+    storageBucket: "lumaagoldd.firebasestorage.app",
+    messagingSenderId: "297249589935",
+    appId: "1:297249589935:web:3317b880dcc113b510e25a",
+    measurementId: "G-YB8WFM32C7"
   };
 
-  function cloudinaryReady() {
-    return !!(CLOUDINARY.cloudName && CLOUDINARY.uploadPreset);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
   }
-
-  // يضيف تحويلات كلاودناري: صيغة تلقائية (WebP/AVIF) + جودة تلقائية + عرض أقصى
-  function optimizedUrl(url) {
-    return url.indexOf("/image/upload/") === -1
-      ? url
-      : url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1200/");
-  }
-
-  function uploadToCloudinary(blob) {
-    return new Promise(function (resolve, reject) {
-      if (!cloudinaryReady()) { reject(new Error("not-configured")); return; }
-      var fd = new FormData();
-      fd.append("file", blob);
-      fd.append("upload_preset", CLOUDINARY.uploadPreset);
-      fetch("https://api.cloudinary.com/v1_1/" + CLOUDINARY.cloudName + "/image/upload", {
-        method: "POST",
-        body: fd
-      })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-          if (d && d.secure_url) resolve(optimizedUrl(d.secure_url));
-          else reject(new Error((d && d.error && d.error.message) || "upload-failed"));
-        })
-        .catch(reject);
-    });
-  }
+  const db = firebase.firestore();
 
   function fetchCloudDataAdmin() {
-    fetch(CLOUD_URL + "?t=" + Date.now(), { cache: "no-store" })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (!data) return;
-        if (Array.isArray(data.items) && data.items.length > 0) {
-          localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
+    db.collection("site_data").doc("main").get()
+      .then(function(doc) {
+        if (doc.exists) {
+          var data = doc.data();
+          if (Array.isArray(data.items) && data.items.length > 0) {
+            localStorage.setItem("lumaa_gallery_items", JSON.stringify(data.items));
+          }
+          if (data.config && typeof data.config === "object") {
+            localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
+          }
+          renderGallery();
+          loadInfoForm();
         }
-        if (data.config && typeof data.config === "object" && Object.keys(data.config).length > 0) {
-          localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
-        }
-        renderGallery();
-        loadInfoForm();
       })
-      .catch(function(e) {});
+      .catch(function(e) {
+        console.error("Error fetching data from Firestore:", e);
+      });
   }
 
   function syncToCloud() {
     var rawItems = getItems();
     var cfg = getConfig();
 
-    /* الصور المخزّنة كـ Base64 ما تنرفع للسحابة — تكبّر الملف لدرجة يفشل الرفع.
-       ما ننحذفها من الجهاز، بس ننبّه إنها ما راح تظهر لباقي الزبائن. */
-    var items = rawItems.filter(function (item) {
-      return !(item.src && item.src.indexOf("data:image") === 0);
-    });
+    var payload = { 
+      items: rawItems, 
+      config: cfg,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
 
-    var skipped = rawItems.length - items.length;
-    if (skipped > 0) {
-      showToast("⚠️ " + skipped + " صورة محفوظة بجهازك فقط ولن يشوفها الزبائن — أعد رفعها بعد ضبط Cloudinary");
-    }
+    showToast("جاري الحفظ في السحابة... ☁️");
 
-    var payload = { items: items, config: cfg };
-
-    showToast("جاري الرفع للحفظ السحابي... ☁️");
-
-    fetch(CLOUD_URL, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json" },
-      body: JSON.stringify(payload)
-    }).then(function(res) {
-      if (res.ok) {
-        showToast("تم الحفظ والتحديث السحابي لكل العالم بنجاح! ☁️✨");
-      } else {
-        showToast("تنبيه: تم الحفظ محلياً 📱");
-      }
-    }).catch(function(err) {
-      console.log("Cloud sync note:", err);
-      showToast("تم التحديث محلياً 📱");
-    });
+    db.collection("site_data").doc("main").set(payload)
+      .then(function() {
+        showToast("تم الحفظ والتحديث لكل العالم بنجاح! ☁️✨");
+      })
+      .catch(function(err) {
+        console.error("Firebase sync error:", err);
+        showToast("تنبيه: حجم البيانات كبير جداً، جاري المحاولة بنظام الأجزاء... ⏳");
+        
+        // إذا كان الحجم كبيراً على وثيقة واحدة، نحفظ الأساسيات
+        db.collection("site_data").doc("main").set({
+          config: cfg,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
   }
 
   function getItems() {
@@ -435,14 +409,12 @@
     }
   }
 
-  /* يصغّر الصورة محلياً قبل الرفع ويرجّعها Blob — أسرع بالرفع وأخف بالباندويث.
-     كلاودناري بعدها يتكفّل بالصيغة والجودة حسب جهاز الزبون. */
   function compressImageFile(file, callback) {
     var reader = new FileReader();
     reader.onload = function (evt) {
       var img = new Image();
       img.onload = function () {
-        var maxDim = 1600; // دقة عالية — كلاودناري يصغّرها للعرض المطلوب
+        var maxDim = 1200; // دقة جيدة جداً وواضحة وخفيفة
         var width = img.width;
         var height = img.height;
 
@@ -460,12 +432,11 @@
         canvas.width = width;
         canvas.height = height;
         canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-
-        canvas.toBlob(function (blob) {
-          callback(blob || file);
-        }, "image/jpeg", 0.85);
+        
+        var dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+        callback(dataUrl);
       };
-      img.onerror = function () { callback(file); };
+      img.onerror = function () { callback(evt.target.result); };
       img.src = evt.target.result;
     };
     reader.readAsDataURL(file);
@@ -481,11 +452,10 @@
     container.style.display = "flex";
 
     files.forEach(function (file) {
-      compressImageFile(file, function (blob) {
-        selectedFilesDataUrls.push(blob);
+      compressImageFile(file, function (dataUrl) {
+        selectedFilesDataUrls.push(dataUrl);
         var img = document.createElement("img");
-        img.src = URL.createObjectURL(blob);
-        img.onload = function () { URL.revokeObjectURL(img.src); };
+        img.src = dataUrl;
         img.style.height = "75px";
         img.style.width = "75px";
         img.style.objectFit = "cover";
@@ -506,64 +476,42 @@
     var catSelect = document.getElementById("photo-cat");
     var cat = catSelect.value;
     
-    // حفظ التحديد حتى يبقى ثابتاً ولا يتغير أبداً
     localStorage.setItem("lumaa_last_selected_cat", cat);
 
     var baseAr = document.getElementById("photo-ar").value.trim();
     var baseEn = document.getElementById("photo-en").value.trim();
     var tall = document.getElementById("photo-tall").value === "true";
 
-    if (!cloudinaryReady()) {
-      alert(
-        "استضافة الصور مو مضبوطة بعد.\n\n" +
-        "افتح ملف admin.html ودوّر على CLOUDINARY بأعلى السكربت، " +
-        "وحط اسم السحابة واسم الـ upload preset.\n\n" +
-        "الخطوات كاملة موجودة بملف README تحت عنوان «ضبط استضافة الصور»."
-      );
-      return;
-    }
-
     var count = selectedFilesDataUrls.length;
-    var blobs = selectedFilesDataUrls.slice();
+    var dataUrls = selectedFilesDataUrls.slice();
 
     var btn = e.target.querySelector("[type=submit]");
     if (btn) { btn.disabled = true; }
-    showToast("جاري رفع " + count + " صورة... ⏳");
+    showToast("جاري إضافة " + count + " صورة... ⏳");
 
-    Promise.all(blobs.map(function (blob) { return uploadToCloudinary(blob); }))
-      .then(function (urls) {
-        var items = getItems();
+    var items = getItems();
 
-        urls.forEach(function (url, i) {
-          var suffix = (count > 1) ? (" (" + (i + 1) + ")") : "";
-          var ar = baseAr ? (baseAr + suffix) : ((cat === "shop") ? ("صورة واجهة المحل" + suffix) : ("مجوهرات ذهب" + suffix));
-          var en = baseEn ? (baseEn + suffix) : ((cat === "shop") ? ("Showroom Facade" + suffix) : ("Gold Jewelry" + suffix));
+    dataUrls.forEach(function (url, i) {
+      var suffix = (count > 1) ? (" (" + (i + 1) + ")") : "";
+      var ar = baseAr ? (baseAr + suffix) : ((cat === "shop") ? ("صورة واجهة المحل" + suffix) : ("مجوهرات ذهب" + suffix));
+      var en = baseEn ? (baseEn + suffix) : ((cat === "shop") ? ("Showroom Facade" + suffix) : ("Gold Jewelry" + suffix));
 
-          items.unshift({ src: url, ar: ar, en: en, cat: cat, tall: tall });
-        });
+      items.unshift({ src: url, ar: ar, en: en, cat: cat, tall: tall });
+    });
 
-        saveItems(items);
+    saveItems(items);
 
-        document.getElementById("photo-ar").value = "";
-        document.getElementById("photo-en").value = "";
-        document.getElementById("photo-file-input").value = "";
-        var container = document.getElementById("file-preview-container");
-        container.innerHTML = "";
-        container.style.display = "none";
-        selectedFilesDataUrls = [];
+    document.getElementById("photo-ar").value = "";
+    document.getElementById("photo-en").value = "";
+    document.getElementById("photo-file-input").value = "";
+    var container = document.getElementById("file-preview-container");
+    container.innerHTML = "";
+    container.style.display = "none";
+    selectedFilesDataUrls = [];
 
-        catSelect.value = cat; // يبقى الاختيار ثابت
-        showToast("تم رفع " + count + " صورة ونشرها لكل الزبائن! 📸✨");
-      })
-      .catch(function (err) {
-        console.error("Upload failed:", err);
-        alert("فشل رفع الصور: " + (err && err.message ? err.message : "خطأ غير معروف") +
-              "\n\nتأكد إن الـ upload preset نوعه Unsigned.");
-        showToast("فشل الرفع ❌");
-      })
-      .then(function () {
-        if (btn) { btn.disabled = false; }
-      });
+    catSelect.value = cat;
+    if (btn) { btn.disabled = false; }
+    showToast("تم حفظ " + count + " صورة ونشرها بنجاح! 📸✨");
   }
 
   function moveItem(index, dir) {

@@ -227,15 +227,31 @@
     renderMerchandiseMarquee(allItems);
   }
 
-  /* ------------------------------- الربط السحابي الحي --------------------------------- */
-  var CLOUD_URL = "https://jsonblob.com/api/jsonBlob/019fec1b-bbf1-7597-8272-a86fb642f860";
+  /* ------------------------------- الربط السحابي الحي (Firebase) --------------------------------- */
+  const firebaseConfig = {
+    apiKey: "AIzaSyC59tDLTIm5Yt6DyzpvDJV6BurRPFRDzkc",
+    authDomain: "lumaagoldd.firebaseapp.com",
+    projectId: "lumaagoldd",
+    storageBucket: "lumaagoldd.firebasestorage.app",
+    messagingSenderId: "297249589935",
+    appId: "1:297249589935:web:3317b880dcc113b510e25a",
+    measurementId: "G-YB8WFM32C7"
+  };
+
+  if (typeof firebase !== 'undefined') {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  }
 
   function fetchCloudData() {
-    // بدون كسر الكاش المتصفح ممكن يخدم نسخة قديمة فما تظهر الصور الجديدة
-    fetch(CLOUD_URL + "?t=" + Date.now(), { cache: "no-store" })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (!data) return;
+    if (typeof firebase === 'undefined') return;
+    
+    var db = firebase.firestore();
+    db.collection("site_data").doc("main").get()
+      .then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data();
         var updated = false;
 
         if (Array.isArray(data.items) && data.items.length > 0) {
@@ -243,7 +259,7 @@
           updated = true;
         }
 
-        if (data.config && typeof data.config === "object" && Object.keys(data.config).length > 0) {
+        if (data.config && typeof data.config === "object") {
           localStorage.setItem("lumaa_site_config", JSON.stringify(data.config));
           applyDynamicConfig();
         }
@@ -253,7 +269,7 @@
         }
       })
       .catch(function(err) {
-        console.log("Cloud fetch note:", err);
+        console.log("Firebase fetch note:", err);
       });
   }
 
